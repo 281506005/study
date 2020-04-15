@@ -4,6 +4,7 @@ package key.study.JDKProxy;
 import sun.misc.ProxyGenerator;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class JDKProxyTest {
 
@@ -23,12 +24,24 @@ public class JDKProxyTest {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//
+
 //        study.codeSource();
 
         try {
-            StudyProxyTemp.invok(JavaStudy.class);
+
+            Study study = (Study) new StudyProxy().getInstance(new JavaStudy());
+            System.out.println(study);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

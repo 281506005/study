@@ -1,25 +1,29 @@
 package key.study.JDKProxy;
 
-import org.apache.catalina.session.StandardManager;
-
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import org.springframework.cglib.proxy.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 
 public class StudyProxyTemp {
     private static String ln = "\n";
 
-    public static void invok(Class interfaces) throws IOException, ClassNotFoundException {
+    public static Object invok(Class interfaces, ClassLoader classLoader, InvocationHandler invocationHandler) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         //组装类
         String sourceJava = generate(interfaces);
-        System.out.println(sourceJava);
-
+        System.out.println(interfaces.getResource("").getPath());
+        String path = interfaces.getResource("").getPath();
 
         //生成java文件
-        FileWriter fileWriter = new FileWriter(interfaces.getPackage()+"$porxy.java");
+        File file = new File(path+"$porxy.java");
+        FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(sourceJava);
         fileWriter.flush();
         fileWriter.close();
@@ -27,12 +31,16 @@ public class StudyProxyTemp {
 
         //生成class
         JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager manager = javaCompiler.getStandardFileManager(null, null, Charset.defaultCharset());
-        javaCompiler.getTask(null, manager, null)
+        StandardJavaFileManager manager = javaCompiler.getStandardFileManager(null, null, null);
+        Iterable iterable = manager.getJavaFileObjects(file);
+        JavaCompiler.CompilationTask compilationTask = javaCompiler.getTask(null, manager, null,null,null,iterable);
+        compilationTask.call();
+        manager.close();
 
         //加载class类
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        Class object = classLoader.loadClass(interfaces.getPackage()+"$porxy.java");
+        Class object = classLoader.loadClass("$porxy.java");
+        Constructor constructor = object.getConstructor(InvocationHandler.class);
+        return constructor.newInstance(invocationHandler);
     }
 
     /**
@@ -46,11 +54,15 @@ public class StudyProxyTemp {
         stringBuilder.append("import java.lang.reflect.Method;").append(ln);
         stringBuilder.append("import java.lang.reflect.Proxy;").append(ln);
         stringBuilder.append("import java.lang.reflect.UndeclaredThrowableException;").append(ln);
-        stringBuilder.append("public final class $proxy extends Proxy implements").append(interfaces.getName()).append("{").append(ln);
-        stringBuilder.append("    public $proxy(InvocationHandler var1) throws  {").append(ln);
+        stringBuilder.append("public final class $proxy extends Proxy implements ").append(interfaces.getName()).append("{").append(ln);
+        stringBuilder.append("    private static Method m1; ").append(ln);
+        stringBuilder.append("    private static Method m2; ").append(ln);
+        stringBuilder.append("    private static Method m3; ").append(ln);
+        stringBuilder.append("    private static Method m4; ").append(ln);
+        stringBuilder.append("    public $proxy(InvocationHandler var1)  {").append(ln);
         stringBuilder.append("    super(var1);").append(ln);
         stringBuilder.append("     }").append(ln);
-        stringBuilder.append("public final void ").append(interfaces.getInterfaces()[0].getName()).append(" throws  {").append(ln);
+        stringBuilder.append("public final void ").append(interfaces.getInterfaces()[0].getName()).append("  {").append(ln);
         stringBuilder.append("try {").append(ln);
         stringBuilder.append("super.h.invoke(this, m3, (Object[])null);").append(ln);
         stringBuilder.append("} catch (RuntimeException | Error var2) {").append(ln);
