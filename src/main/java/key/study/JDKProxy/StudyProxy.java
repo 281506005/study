@@ -2,7 +2,7 @@ package key.study.JDKProxy;
 
 import org.springframework.cglib.proxy.Proxy;
 
-import org.springframework.cglib.proxy.InvocationHandler;
+import java.lang.reflect.InvocationHandler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
