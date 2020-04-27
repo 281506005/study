@@ -30,7 +30,7 @@ public class JDKProxyTest {
         try {
 
             Study study = (Study) new StudyProxy().getInstance(new JavaStudy());
-            System.out.println(study);
+            study.codeSource();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

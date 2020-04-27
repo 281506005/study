@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 
 public class StudyProxyTemp {
     private static String ln = "\n";
 
-    public static Object invok(Class interfaces, ClassLoader classLoader, InvocationHandler invocationHandler) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static Object newProxyInstance(Class interfaces, ClassLoader classLoader, InvocationHandler invocationHandler) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         //组装类
         String sourceJava = generate(interfaces);
         System.out.println(interfaces.getResource("").getPath());
@@ -38,7 +40,8 @@ public class StudyProxyTemp {
         manager.close();
 
         //加载class类
-        Class object = classLoader.loadClass(path+"$proxy");
+        URLClassLoader urlClassLoader = URLClassLoader.newInstance(new URL[]{new URL("file:D:\\\\")});
+        Class object= urlClassLoader.loadClass("key.study.JDKProxy.$proxy");
         Constructor constructor = object.getConstructor(InvocationHandler.class);
         return constructor.newInstance(invocationHandler);
     }

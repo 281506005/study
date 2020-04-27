@@ -1,6 +1,6 @@
 package key.study.JDKProxy;
 
-import org.springframework.cglib.proxy.Proxy;
+import java.lang.reflect.Proxy;
 
 import java.lang.reflect.InvocationHandler;
 
@@ -23,8 +23,8 @@ public class StudyProxy implements InvocationHandler {
     public Object getInstance(Study study) throws NoSuchMethodException, IOException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         this.study = study;
         Class target = study.getClass();
-        return  StudyProxyTemp.invok(target,target.getClassLoader(),this);
-//        return Proxy.newProxyInstance(target.getClassLoader(),target.getInterfaces(),this);
+//        return  StudyProxyTemp.newProxyInstance(target,target.getClassLoader(),this);
+        return Proxy.newProxyInstance(target.getClassLoader(),target.getInterfaces(),this);
     }
 
     @Override
@@ -34,16 +34,5 @@ public class StudyProxy implements InvocationHandler {
         return null;
     }
 
-    static {
-        try {
-             Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
-//            m3 = Class.forName(key.study.JDKProxy.JavaStudy).getMethod(key.study.JDKProxy.Study);
-             Class.forName("java.lang.Object").getMethod("toString");
-            Class.forName("java.lang.Object").getMethod("hashCode");
-        } catch (NoSuchMethodException var2) {
-            throw new NoSuchMethodError(var2.getMessage());
-        } catch (ClassNotFoundException var3) {
-            throw new NoClassDefFoundError(var3.getMessage());
-        }
-    }
+
 }
